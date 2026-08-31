@@ -1,0 +1,70 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+  color: hsl(222 25% 17%);
+  background: hsl(220 23% 97%);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --canvas: 220 23% 97%;
+  --surface: 0 0% 100%;
+  --elevated: 0 0% 100%;
+  --ink: 222 25% 17%;
+  --muted: 220 10% 46%;
+  --border: 220 15% 89%;
+  --accent: 249 74% 58%;
+  --accent-foreground: 0 0% 100%;
+  --shadow: 222 25% 15%;
+}
+
+:root.dark {
+  color: hsl(220 20% 93%);
+  background: hsl(224 22% 10%);
+  --canvas: 224 22% 10%;
+  --surface: 224 20% 13%;
+  --elevated: 225 19% 16%;
+  --ink: 220 20% 93%;
+  --muted: 220 12% 63%;
+  --border: 222 16% 24%;
+  --accent: 250 82% 70%;
+  --accent-foreground: 230 30% 12%;
+  --shadow: 0 0% 0%;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body { overflow: hidden; }
+button, input { font: inherit; }
+
+.markdown-editor .cm-editor { height: 100%; font-size: var(--editor-font-size); background: hsl(var(--surface)); color: hsl(var(--ink)); }
+.markdown-editor .cm-scroller { overflow: auto; font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace; }
+.markdown-editor .cm-gutters { border-right: 1px solid hsl(var(--border)); background: hsl(var(--surface)); color: hsl(var(--muted)); }
+.markdown-editor .cm-activeLineGutter, .markdown-editor .cm-activeLine { background: hsl(var(--accent) / 0.05); }
+.markdown-editor .cm-focused { outline: none; }
+.split-divider { width: 9px; cursor: col-resize; display: grid; place-items: center; background: hsl(var(--surface)); border-left: 1px solid hsl(var(--border)); border-right: 1px solid hsl(var(--border)); }
+.split-divider:hover, .split-divider:active { background: hsl(var(--accent) / 0.08); }
+.split-grip { width: 3px; height: 36px; border-radius: 999px; background: hsl(var(--border)); transition: background .2s; }
+.split-divider:hover .split-grip { background: hsl(var(--accent)); }
+
+.markdown-preview { color: hsl(var(--ink)); line-height: 1.8; }
+.markdown-preview h1, .markdown-preview h2, .markdown-preview h3, .markdown-preview h4, .markdown-preview h5, .markdown-preview h6 { scroll-margin-top: 24px; color: hsl(var(--ink)); font-weight: 700; line-height: 1.25; }
+.markdown-preview h1 { margin: 0 0 1.25em; font-size: 2.1em; letter-spacing: -.03em; }
+.markdown-preview h2 { margin: 1.8em 0 .7em; padding-bottom: .35em; border-bottom: 1px solid hsl(var(--border)); font-size: 1.55em; }
+.markdown-preview h3 { margin: 1.5em 0 .55em; font-size: 1.25em; }
+.markdown-preview h4, .markdown-preview h5, .markdown-preview h6 { margin: 1.25em 0 .5em; font-size: 1.05em; }
+.markdown-preview p, .markdown-preview ul, .markdown-preview ol, .markdown-preview blockquote, .markdown-preview pre, .markdown-preview table { margin: 1em 0; }
+.markdown-preview ul, .markdown-preview ol { padding-left: 1.5em; }
+.markdown-preview li + li { margin-top: .3em; }
+.markdown-preview a { color: hsl(var(--accent)); text-decoration: underline; text-underline-offset: 3px; }
+.markdown-preview blockquote { border-left: 3px solid hsl(var(--accent)); padding: .15em 1em; color: hsl(var(--muted)); background: hsl(var(--accent) / .06); }
+.markdown-preview code { border-radius: .35em; background: hsl(var(--ink) / .08); padding: .15em .35em; font-family: "Cascadia Code", Consolas, monospace; font-size: .88em; }
+.markdown-preview pre { overflow-x: auto; border: 1px solid hsl(var(--border)); border-radius: .75rem; background: hsl(var(--ink) / .06); padding: 1rem 1.1rem; }
+.markdown-preview pre code { background: transparent; padding: 0; }
+.markdown-preview table { width: 100%; border-collapse: collapse; font-size: .94em; }
+.markdown-preview th, .markdown-preview td { border: 1px solid hsl(var(--border)); padding: .55em .75em; text-align: left; }
+.markdown-preview th { background: hsl(var(--ink) / .05); font-weight: 650; }
+.markdown-preview input[type="checkbox"] { margin-right: .45em; accent-color: hsl(var(--accent)); }
+.markdown-preview img { max-width: 100%; border-radius: .75rem; }
+.markdown-preview hr { margin: 2em 0; border: 0; border-top: 1px solid hsl(var(--border)); }

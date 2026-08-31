@@ -1,0 +1,24 @@
+# JavaScript dependencies and build outputs
+node_modules/
+dist/
+
+# Rust / Tauri build outputs
+src-tauri/target/
+
+# Local environment and application state
+.env
+.env.*
+!.env.example
+*.local
+*.log
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Test and coverage outputs
+coverage/
+.vitest/
