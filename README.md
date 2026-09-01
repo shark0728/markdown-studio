@@ -74,6 +74,15 @@ Windows 安装包会生成在：
 
 当前为 v1 核心版本，重点覆盖单文档编辑、实时预览和本地文件工作流。云同步、插件、版本历史和多标签页不在当前版本范围内。
 
+## 下载与发布
+
+- [查看 GitHub Releases](https://github.com/shark0728/markdown-studio/releases)
+- Windows 安装包提供 MSI 和 NSIS 两种格式，另附独立 EXE 运行文件。
+
+## 许可证
+
+本项目采用 [MIT License](./LICENSE)。
+
 ## English summary
 
 Markdown Studio is a local-first Windows Markdown viewer and editor built with Tauri 2, React, and TypeScript. It supports GFM live preview, CodeMirror editing, outline navigation, local file operations, unsaved-change protection, dark mode, and persisted local preferences.
