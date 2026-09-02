@@ -52,6 +52,18 @@ Windows 安装包会生成在：
 - `src-tauri/target/release/bundle/msi/`
 - `src-tauri/target/release/bundle/nsis/`
 
+发布到 GitHub Releases 前，先准备无空格的资产文件名：
+
+```powershell
+pwsh -File scripts/prepare-release-assets.ps1
+```
+
+脚本会把 Tauri 的构建输出复制到 `src-tauri/target/release/release-assets/`，并生成适合 Release 的文件名：
+
+- `markdown-studio-<version>.exe`
+- `markdown-studio-<version>-x64.msi`
+- `markdown-studio-<version>-x64-setup.exe`
+
 ## 快捷键
 
 | 快捷键 | 操作 |
