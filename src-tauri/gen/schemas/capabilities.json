@@ -1,1 +1,1 @@
-{"main-capability":{"identifier":"main-capability","description":"Permissions for the Markdown Studio main window","local":true,"windows":["main"],"permissions":["core:default","dialog:default","store:default"]}}
+{"main-capability":{"identifier":"main-capability","description":"Permissions for the Markdown Studio main window","local":true,"windows":["main"],"permissions":["core:default","core:window:allow-close","core:window:allow-destroy","dialog:default","store:default"]}}

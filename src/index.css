@@ -38,8 +38,9 @@ html, body, #root { height: 100%; margin: 0; }
 body { overflow: hidden; }
 button, input { font: inherit; }
 
-.markdown-editor .cm-editor { height: 100%; font-size: var(--editor-font-size); background: hsl(var(--surface)); color: hsl(var(--ink)); }
-.markdown-editor .cm-scroller { overflow: auto; font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace; }
+.markdown-editor { height: 100%; min-height: 0; }
+.markdown-editor .cm-editor { height: 100%; min-height: 0; font-size: var(--editor-font-size); background: hsl(var(--surface)); color: hsl(var(--ink)); }
+.markdown-editor .cm-scroller { min-height: 0; overflow-y: auto; overflow-x: auto; overscroll-behavior: contain; font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace; }
 .markdown-editor .cm-gutters { border-right: 1px solid hsl(var(--border)); background: hsl(var(--surface)); color: hsl(var(--muted)); }
 .markdown-editor .cm-activeLineGutter, .markdown-editor .cm-activeLine { background: hsl(var(--accent) / 0.05); }
 .markdown-editor .cm-focused { outline: none; }

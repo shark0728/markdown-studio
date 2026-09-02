@@ -38,6 +38,7 @@ describe("App integration", () => {
   it("opens a file and updates preview while editing", async () => {
     const service = fileService({ chooseOpenFile: vi.fn().mockResolvedValue("D:\\note.md"), read: vi.fn().mockResolvedValue("# 原标题") })
     render(<App fileService={service} preferenceStorage={preferences} />)
+    expect(screen.getAllByRole("textbox")).toHaveLength(1)
     await userEvent.click(screen.getByRole("button", { name: "打开文档" }))
     expect((await screen.findAllByRole("heading", { name: "原标题" })).length).toBeGreaterThan(0)
     fireEvent.change(screen.getAllByRole("textbox")[0], { target: { value: "# 新标题" } })

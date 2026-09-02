@@ -13,6 +13,7 @@ import { tauriFileService, type FileService } from "@/lib/file-service"
 import { isMarkdownPath } from "@/lib/document"
 import { extractOutline } from "@/lib/markdown"
 import { scrollEditorToLine } from "@/lib/editor"
+import { closeWindow, shouldInterceptClose } from "@/lib/window"
 import { preferencesStore as tauriPreferencesStore, type PreferencesStore } from "@/lib/preferences"
 import { cn } from "@/lib/utils"
 import { DEFAULT_PREFERENCES, type AppPreferences, type DocumentState, type OutlineItem, type Theme } from "@/types"
@@ -42,7 +43,10 @@ export default function App({ fileService = tauriFileService, preferenceStorage 
   const appWindowRef = useRef(isTauri() ? getCurrentWindow() : null)
   const mainRef = useRef<HTMLDivElement>(null)
   const pendingCloseRef = useRef(false)
+  const dirtyRef = useRef(doc.isDirty)
   const saveAsRef = useRef<() => Promise<boolean>>(async () => false)
+
+  dirtyRef.current = doc.isDirty
 
   const outline = useMemo(() => extractOutline(doc.content), [doc.content])
 
@@ -94,12 +98,12 @@ export default function App({ fileService = tauriFileService, preferenceStorage 
     const appWindow = appWindowRef.current
     if (!appWindow) return
     const unlisten = appWindow.onCloseRequested((event) => {
-      if (!doc.isDirty || pendingCloseRef.current) return
+      if (!shouldInterceptClose(dirtyRef.current, pendingCloseRef.current)) return
       event.preventDefault()
       setPendingAction("close")
     })
     return () => { void unlisten.then((cleanup) => cleanup()) }
-  }, [doc.isDirty])
+  }, [])
 
   useEffect(() => {
     if (!notice) return
@@ -190,8 +194,12 @@ export default function App({ fileService = tauriFileService, preferenceStorage 
       else await openFromDialog()
     } else if (action === "close") {
       pendingCloseRef.current = true
-      if (appWindowRef.current) await appWindowRef.current.close()
-      else window.close()
+      try {
+        await closeWindow(appWindowRef.current)
+      } catch (cause) {
+        pendingCloseRef.current = false
+        setError(`无法关闭窗口：${cause instanceof Error ? cause.message : String(cause)}`)
+      }
     }
   }, [openFromDialog, openPath, pendingOpenPath])
 
@@ -262,7 +270,7 @@ export default function App({ fileService = tauriFileService, preferenceStorage 
       />
       <div className="relative flex min-h-0 flex-1">
         <Outline items={outline} collapsed={outlineCollapsed} onToggle={() => setOutlineCollapsed((value) => !value)} onSelect={(item: OutlineItem) => { scrollEditorToLine(editorViewRef.current, item.line); previewRef.current?.scrollToHeading(item.id) }} />
-        <main className="relative flex min-w-0 flex-1 flex-col" aria-label="Markdown 编辑区域">
+        <main className="relative flex min-h-0 min-w-0 flex-1 flex-col" aria-label="Markdown 编辑区域">
           <div className="flex h-11 shrink-0 items-center justify-between border-b border-border bg-surface px-4 lg:hidden">
             <div className="flex items-center gap-1 rounded-lg bg-ink/5 p-0.5 dark:bg-white/10" role="tablist" aria-label="移动视图模式">
               <Button size="sm" variant={viewMode === "editor" ? "outline" : "ghost"} onClick={() => setViewMode("editor")} role="tab" aria-selected={viewMode === "editor"}><Code2 size={14} />编辑</Button>
@@ -270,22 +278,14 @@ export default function App({ fileService = tauriFileService, preferenceStorage 
             </div>
             <span className="text-xs text-muted">GFM · UTF-8</span>
           </div>
-          <div className="hidden min-h-0 flex-1 lg:flex">
-            <section className="min-w-0" style={{ width: `${preferences.splitRatio * 100}%` }} aria-label="Markdown 源码编辑器">
+          <div className="flex min-h-0 flex-1">
+            <section className={cn("h-full min-h-0 min-w-0", viewMode === "editor" ? "block" : "hidden lg:block")} style={{ width: `${preferences.splitRatio * 100}%` }} aria-label="Markdown 源码编辑器">
               <MarkdownEditor value={doc.content} onChange={(value) => setDocument((current) => updateDocumentContent(current, value))} theme={preferences.theme} fontSize={preferences.fontSize} onViewReady={(view) => { editorViewRef.current = view }} />
             </section>
-            <div className="split-divider group" role="separator" aria-label="调整编辑器和预览比例" onPointerDown={handleResizeStart}><span className="split-grip" /></div>
-            <section className="min-w-0 flex-1" aria-label="Markdown 实时预览">
+            <div className="split-divider group hidden lg:grid" role="separator" aria-label="调整编辑器和预览比例" onPointerDown={handleResizeStart}><span className="split-grip" /></div>
+            <section className={cn("h-full min-h-0 min-w-0 flex-1", viewMode === "preview" ? "block" : "hidden lg:block")} aria-label="Markdown 实时预览">
               <MarkdownPreview ref={previewRef} content={doc.content} fontSize={preferences.fontSize} />
             </section>
-          </div>
-          <div className="min-h-0 flex-1 lg:hidden">
-            <div className={cn("h-full", viewMode === "editor" ? "block" : "hidden")}>
-              <MarkdownEditor value={doc.content} onChange={(value) => setDocument((current) => updateDocumentContent(current, value))} theme={preferences.theme} fontSize={preferences.fontSize} onViewReady={(view) => { editorViewRef.current = view }} />
-            </div>
-            <div className={cn("h-full", viewMode === "preview" ? "block" : "hidden")}>
-              <MarkdownPreview ref={previewRef} content={doc.content} fontSize={preferences.fontSize} />
-            </div>
           </div>
         </main>
         {settingsOpen && (
