@@ -41,13 +41,13 @@ export function updateDocumentContent(document: DocumentState, content: string):
   }
 }
 
-export function markDocumentSaved(document: DocumentState, path = document.path): DocumentState {
+export function markDocumentSaved(document: DocumentState, path = document.path, savedContent = document.content): DocumentState {
   return {
     ...document,
     path,
     title: titleFromPath(path),
-    savedContent: document.content,
-    isDirty: false,
+    savedContent,
+    isDirty: document.content !== savedContent,
   }
 }
 

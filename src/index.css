@@ -33,10 +33,30 @@
   --shadow: 0 0% 0%;
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; letter-spacing: 0; }
 html, body, #root { height: 100%; margin: 0; }
 body { overflow: hidden; }
 button, input { font: inherit; }
+[hidden] { display: none !important; }
+button, input, a, [tabindex] { outline-offset: 3px; }
+:focus-visible { outline: 2px solid hsl(var(--accent)); }
+.field { min-height: 38px; border: 1px solid hsl(var(--border)); border-radius: 6px; padding: 6px 10px; background: hsl(var(--canvas)); color: hsl(var(--ink)); }
+.formatting-toolbar > button { flex-shrink: 0; }
+.split-divider { touch-action: none; }
+.error-toast { width: calc(100% - 2rem); }
+.markdown-preview { overflow-wrap: anywhere; }
+.markdown-preview table { display: block; overflow-x: auto; }
+.markdown-editor .cm-panel { background: hsl(var(--surface)); color: hsl(var(--ink)); }
+.markdown-editor .cm-textfield { color: hsl(var(--ink)); background: hsl(var(--canvas)); border: 1px solid hsl(var(--border)); border-radius: 4px; max-width: 100%; }
+.markdown-editor .cm-button { background: hsl(var(--canvas)); color: hsl(var(--ink)); border: 1px solid hsl(var(--border)); border-radius: 4px; }
+@media (max-width: 639px) {
+  .app-toolbar { gap: 4px; padding: 6px 8px; }
+  .app-toolbar > div:first-child { margin-right: 0; }
+  .app-toolbar button { width: 32px; height: 36px; }
+  .document-title { order: 4; flex-basis: 100%; padding: 3px 0; }
+  .formatting-toolbar { min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; } }
 
 .markdown-editor { height: 100%; min-height: 0; }
 .markdown-editor .cm-editor { height: 100%; min-height: 0; font-size: var(--editor-font-size); background: hsl(var(--surface)); color: hsl(var(--ink)); }
@@ -51,7 +71,7 @@ button, input { font: inherit; }
 
 .markdown-preview { color: hsl(var(--ink)); line-height: 1.8; }
 .markdown-preview h1, .markdown-preview h2, .markdown-preview h3, .markdown-preview h4, .markdown-preview h5, .markdown-preview h6 { scroll-margin-top: 24px; color: hsl(var(--ink)); font-weight: 700; line-height: 1.25; }
-.markdown-preview h1 { margin: 0 0 1.25em; font-size: 2.1em; letter-spacing: -.03em; }
+.markdown-preview h1 { margin: 0 0 1.25em; font-size: 2.1em; }
 .markdown-preview h2 { margin: 1.8em 0 .7em; padding-bottom: .35em; border-bottom: 1px solid hsl(var(--border)); font-size: 1.55em; }
 .markdown-preview h3 { margin: 1.5em 0 .55em; font-size: 1.25em; }
 .markdown-preview h4, .markdown-preview h5, .markdown-preview h6 { margin: 1.25em 0 .5em; font-size: 1.05em; }
@@ -61,7 +81,7 @@ button, input { font: inherit; }
 .markdown-preview a { color: hsl(var(--accent)); text-decoration: underline; text-underline-offset: 3px; }
 .markdown-preview blockquote { border-left: 3px solid hsl(var(--accent)); padding: .15em 1em; color: hsl(var(--muted)); background: hsl(var(--accent) / .06); }
 .markdown-preview code { border-radius: .35em; background: hsl(var(--ink) / .08); padding: .15em .35em; font-family: "Cascadia Code", Consolas, monospace; font-size: .88em; }
-.markdown-preview pre { overflow-x: auto; border: 1px solid hsl(var(--border)); border-radius: .75rem; background: hsl(var(--ink) / .06); padding: 1rem 1.1rem; }
+.markdown-preview pre { overflow-x: auto; border: 1px solid hsl(var(--border)); border-radius: .5rem; background: hsl(var(--ink) / .06); padding: 1rem 1.1rem; }
 .markdown-preview pre code { background: transparent; padding: 0; }
 .markdown-preview table { width: 100%; border-collapse: collapse; font-size: .94em; }
 .markdown-preview th, .markdown-preview td { border: 1px solid hsl(var(--border)); padding: .55em .75em; text-align: left; }

@@ -1,0 +1,138 @@
+import { test, expect } from "@playwright/test"
+
+const sample = "# Markdown Studio\n\n## 编辑效率\n\n日常写作与本地预览。\n\n- [x] 格式工具栏\n- [ ] 完成校对\n\n| 功能 | 状态 |\n| --- | --- |\n| 最近文件 | 就绪 |\n| 搜索替换 | 就绪 |\n\n```ts\nconst greeting = 'Hello Markdown'\n```\n\n## 下一步\n\n继续写作。"
+
+test.beforeEach(async ({ page }) => {
+  await page.goto("/")
+  await expect(page.getByRole("button", { name: "新建文档" })).toBeEnabled()
+})
+
+test("real editor formats, undoes, redoes and replaces text", async ({ page }) => {
+  const editor = page.locator(".cm-content")
+  await editor.fill("hello")
+  await editor.press("Control+a")
+  await page.getByRole("button", { name: "加粗 (Ctrl+B)", exact: true }).click()
+  await expect(editor).toHaveText("**hello**")
+  await expect(page.locator(".markdown-preview strong")).toHaveText("hello")
+  await page.getByRole("button", { name: "撤销", exact: true }).click()
+  await expect(editor).toHaveText("hello")
+  await page.getByRole("button", { name: "重做", exact: true }).click()
+  await expect(editor).toHaveText("**hello**")
+  await page.getByRole("button", { name: "搜索与替换", exact: true }).click()
+  await expect(page.locator(".cm-search")).toBeVisible()
+  await page.locator('.cm-search input[name="search"]').fill("hello")
+  await page.locator('.cm-search input[name="replace"]').fill("world")
+  await page.locator('.cm-search button[name="replaceAll"]').click()
+  await expect(editor).toHaveText("**world**")
+  await expect(page.locator(".markdown-preview strong")).toHaveText("world")
+})
+
+test("formatting preserves whitespace, paragraph boundaries and literal backticks", async ({ page }) => {
+  const errors: string[] = []
+  page.on("pageerror", (error) => errors.push(error.message))
+  const editor = page.locator(".cm-content")
+  await editor.fill("  first \n\nsecond ")
+  await editor.press("Control+a")
+  await page.getByRole("button", { name: "加粗 (Ctrl+B)", exact: true }).click()
+  await expect(page.locator(".markdown-preview strong")).toHaveText(["first", "second"])
+  await page.getByRole("button", { name: "撤销", exact: true }).click()
+  expect((await editor.locator(".cm-line").allTextContents()).join("\n")).toBe("  first \n\nsecond ")
+  for (const text of ["a`b", "`literal", "literal`", "  value  "]) {
+    await editor.fill(text)
+    await editor.press("Control+a")
+    await page.getByRole("button", { name: "行内代码", exact: true }).click()
+    expect(await page.locator(".markdown-preview code").textContent()).toBe(text)
+    await page.getByRole("button", { name: "行内代码", exact: true }).click()
+    expect((await editor.locator(".cm-line").allTextContents()).join("\n")).toBe(text)
+  }
+  expect(errors).toEqual([])
+})
+
+test("view modes fill available width, restore split and persist settings", async ({ page }) => {
+  await page.locator(".cm-content").fill(sample)
+  const source = page.getByRole("region", { name: "Markdown 源码编辑器", exact: true })
+  const preview = page.getByRole("region", { name: "Markdown 实时预览", exact: true })
+  await page.getByRole("radio", { name: "仅预览" }).check()
+  await expect(source).toBeHidden()
+  await expect(preview).toBeVisible()
+  await page.getByRole("radio", { name: "仅编辑" }).check()
+  await expect(preview).toBeHidden()
+  const sourceBounds = await source.boundingBox()
+  expect(sourceBounds!.width).toBeGreaterThan(1100)
+  await page.getByRole("radio", { name: "左右分栏" }).check()
+  await page.getByRole("separator").focus()
+  await page.keyboard.press("ArrowRight")
+  await expect(page.getByRole("separator")).toHaveAttribute("aria-valuenow", "55")
+  await page.getByRole("button", { name: "编辑器设置", exact: true }).click()
+  await page.getByRole("checkbox", { name: "自动换行" }).uncheck()
+  await page.getByRole("checkbox", { name: "显示行号" }).uncheck()
+  await page.locator("#font-size").fill("18")
+  await page.keyboard.press("Escape")
+  await expect(page.locator(".cm-lineNumbers")).toHaveCount(0)
+  await page.getByRole("button", { name: "切换主题" }).click()
+  await expect(page.locator("html")).toHaveClass("dark")
+  await page.screenshot({ path: "test-results/desktop-dark.png" })
+  page.on("dialog", (dialog) => dialog.accept())
+  await page.reload()
+  await expect(page.locator("html")).toHaveClass("dark")
+  await expect(page.getByRole("separator")).toHaveAttribute("aria-valuenow", "55")
+  await expect(page.locator(".cm-lineNumbers")).toHaveCount(0)
+  await expect(page.locator(".cm-editor")).toHaveCSS("font-size", "18px")
+  await expect(page.locator(".cm-content")).not.toContainText("Markdown Studio")
+})
+
+test("long source scrolls and outline navigates both panes", async ({ page }) => {
+  await page.locator(".cm-content").fill("# Start\n\n" + Array.from({ length: 180 }, (_, index) => "Paragraph " + index + "\n").join("\n") + "\n## End\n\nLast paragraph")
+  await page.getByRole("navigation", { name: "文档大纲" }).getByRole("button", { name: "Start", exact: true }).click()
+  await expect.poll(() => page.locator(".cm-scroller").evaluate((element) => element.scrollTop)).toBeLessThan(100)
+  await page.locator(".cm-scroller").hover()
+  await page.mouse.wheel(0, 600)
+  await expect.poll(() => page.locator(".cm-scroller").evaluate((element) => element.scrollTop)).toBeGreaterThan(200)
+  await page.getByRole("navigation", { name: "文档大纲" }).getByRole("button", { name: "End", exact: true }).click()
+  await expect.poll(() => page.locator(".cm-scroller").evaluate((element) => element.scrollTop)).toBeGreaterThan(1000)
+  await expect.poll(() => page.locator(".markdown-preview").evaluate((element) => element.scrollTop)).toBeGreaterThan(1000)
+  await expect(page.getByLabel("光标位置")).toContainText("行 363")
+})
+
+test("dirty dialog traps focus and blocks background shortcuts", async ({ page }) => {
+  await page.locator(".cm-content").fill("unsaved")
+  await page.getByRole("button", { name: "新建文档" }).click()
+  const dialog = page.getByRole("alertdialog")
+  await expect(dialog).toBeVisible()
+  await expect(page.getByRole("button", { name: "取消", exact: true })).toBeFocused()
+  for (let index = 0; index < 7; index++) {
+    await page.keyboard.press("Tab")
+    await expect.poll(() => dialog.evaluate((element) => element.contains(document.activeElement))).toBe(true)
+  }
+  await page.keyboard.press("Control+n")
+  await page.keyboard.press("Escape")
+  await expect(dialog).toBeHidden()
+  await expect(page.locator(".cm-content")).toHaveText("unsaved")
+  await page.getByRole("button", { name: "新建文档" }).click()
+  await page.getByRole("button", { name: "不保存", exact: true }).click()
+  await expect(page.locator(".cm-content")).toHaveText("")
+  await expect(page.getByRole("button", { name: "撤销", exact: true })).toBeDisabled()
+})
+
+for (const width of [375, 900, 1024, 1440]) {
+  test("layout and screenshots at " + width, async ({ page }) => {
+    await page.setViewportSize({ width, height: width === 375 ? 812 : 900 })
+    await page.locator(".cm-content").fill(sample)
+    await expect(page.locator(".cm-editor")).toHaveCount(1)
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth)
+    expect(overflow).toBe(false)
+    const bounds = await page.locator(".cm-scroller").boundingBox()
+    expect(bounds!.height).toBeGreaterThan(400)
+    if (width < 1024) {
+      expect(bounds!.width).toBeGreaterThan(width - 20)
+      await page.getByRole("radio", { name: "仅预览" }).check()
+      await expect(page.getByRole("table")).toBeVisible()
+      await page.getByRole("button", { name: "文档大纲", exact: true }).click()
+      await page.getByRole("navigation", { name: "窄窗口文档大纲" }).getByRole("button", { name: "下一步", exact: true }).click()
+      await expect(page.getByRole("dialog")).toBeHidden()
+    }
+    await expect(page.locator("header img")).toHaveJSProperty("complete", true)
+    expect(await page.locator("header img").evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBe(32)
+    await page.screenshot({ path: "test-results/layout-" + width + ".png" })
+  })
+}

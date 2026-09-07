@@ -22,3 +22,5 @@ desktop.ini
 # Test and coverage outputs
 coverage/
 .vitest/
+test-results/
+playwright-report/

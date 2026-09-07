@@ -10,11 +10,11 @@ type OutlineProps = {
 
 export function Outline({ items, collapsed, onToggle, onSelect }: OutlineProps) {
   return (
-    <aside className={`outline-panel flex min-h-0 flex-col border-r border-border bg-surface transition-[width] duration-200 ${collapsed ? "w-12" : "w-60"}`}>
+    <aside className={`outline-panel flex min-h-0 shrink-0 flex-col border-r border-border bg-surface ${collapsed ? "w-12" : "w-52"}`}>
       <div className="flex h-12 shrink-0 items-center border-b border-border px-3">
         <button className="flex items-center gap-2 rounded-lg p-1.5 text-muted transition hover:bg-ink/5 hover:text-ink" onClick={onToggle} aria-label={collapsed ? "展开大纲" : "折叠大纲"} title={collapsed ? "展开大纲" : "折叠大纲"}>
           <ListTree size={17} aria-hidden="true" />
-          {!collapsed && <span className="text-xs font-semibold uppercase tracking-[0.18em]">大纲</span>}
+          {!collapsed && <span className="text-xs font-semibold">大纲</span>}
         </button>
       </div>
       {!collapsed && (
@@ -29,7 +29,7 @@ export function Outline({ items, collapsed, onToggle, onSelect }: OutlineProps) 
             >
               {item.text}
             </button>
-          )) : <p className="px-2 py-4 text-xs leading-5 text-muted">输入标题后，这里会显示文档结构。</p>}
+          )) : <p className="px-2 py-4 text-xs leading-5 text-muted">暂无标题</p>}
         </nav>
       )}
     </aside>

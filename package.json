@@ -1,7 +1,7 @@
 {
   "name": "markdown-studio",
   "private": true,
-  "version": "0.1.2",
+  "version": "0.2.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,13 +10,18 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:native": "node scripts/native-smoke.mjs",
     "tauri": "tauri"
   },
   "dependencies": {
+    "@codemirror/commands": "^6.11.0",
     "@codemirror/lang-markdown": "^6.3.3",
     "@codemirror/search": "^6.5.10",
+    "@codemirror/state": "^6.7.4",
     "@codemirror/theme-one-dark": "^6.1.2",
     "@codemirror/view": "^6.36.5",
+    "@radix-ui/react-dialog": "^1.1.23",
     "@tauri-apps/api": "^2.7.0",
     "@tauri-apps/plugin-dialog": "^2.4.0",
     "@tauri-apps/plugin-store": "^2.4.0",
@@ -25,15 +30,20 @@
     "clsx": "^2.1.1",
     "github-slugger": "^2.0.0",
     "lucide-react": "^0.468.0",
+    "mdast-util-to-string": "^4.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-markdown": "^9.0.1",
     "rehype-sanitize": "^6.0.0",
     "remark-gfm": "^4.0.0",
-    "tailwind-merge": "^2.6.0"
+    "remark-parse": "^11.0.0",
+    "tailwind-merge": "^2.6.0",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "@playwright/test": "^1.63.0",
     "@tauri-apps/cli": "^2.7.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.1.0",

@@ -21,4 +21,12 @@ describe("document helpers", () => {
   it("defaults to LF", () => {
     expect(detectLineEnding("one\ntwo")).toBe("lf")
   })
+
+  it("only marks the snapshot actually written to disk as saved", () => {
+    const latest = updateDocumentContent(createDocument("original"), "newer edit")
+    const saved = markDocumentSaved(latest, "D:\\note.md", "earlier snapshot")
+    expect(saved.savedContent).toBe("earlier snapshot")
+    expect(saved.content).toBe("newer edit")
+    expect(saved.isDirty).toBe(true)
+  })
 })
