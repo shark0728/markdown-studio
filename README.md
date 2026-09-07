@@ -113,8 +113,12 @@ pwsh -File scripts/prepare-release-assets.ps1
 
 ## 下载与发布
 
-- [查看 GitHub Releases](https://github.com/shark0728/markdown-studio/releases)
-- Windows 安装包提供 MSI 和 NSIS 两种格式，另附独立 EXE 运行文件。
+- [最新 Release](https://github.com/shark0728/markdown-studio/releases/latest) · [v0.2.1 发布说明](https://github.com/shark0728/markdown-studio/releases/tag/v0.2.1)
+- [Windows x64 安装包（NSIS）](https://github.com/shark0728/markdown-studio/releases/download/v0.2.1/markdown-studio-0.2.1-x64-setup.exe)
+- [Windows x64 MSI](https://github.com/shark0728/markdown-studio/releases/download/v0.2.1/markdown-studio-0.2.1-x64.msi)
+- [独立 EXE](https://github.com/shark0728/markdown-studio/releases/download/v0.2.1/markdown-studio-0.2.1.exe)
+
+v0.2.1 已包含 v0.2.0 的功能，无需先安装中间版本。升级前请手动保存文档并退出旧版；当前没有内置自动更新。独立 EXE 不会替换现有桌面快捷方式。运行需要 WebView2，发布包尚未进行代码签名。
 
 ## 许可证
 
@@ -122,4 +126,4 @@ pwsh -File scripts/prepare-release-assets.ps1
 
 ## English summary
 
-Markdown Studio is a local-first Windows Markdown viewer and editor built with Tauri 2, React, and TypeScript. Version 0.2.0 adds selection-aware formatting, undo/redo, recent-file management, real editor/split/preview modes, search and replace, cursor statistics, and persisted wrapping/line-number settings. Unsaved documents stay local and are not automatically backed up.
+Markdown Studio is a local-first Windows Markdown viewer and editor built with Tauri 2, React, and TypeScript. The v0.2.1 release includes the v0.2.0 formatting toolbar, undo/redo, recent-file management, editor/split/preview modes, search and replace, cursor statistics, and persisted editing settings, plus fixes for formatting edge cases, preview position, and startup preferences. Unsaved documents stay local and are not automatically backed up. Updates must be downloaded and installed manually.

@@ -16,6 +16,7 @@
 - `src/lib/formatting.ts`：CodeMirror 格式事务，选区/多光标/撤销必须保持一致。
 - `tests/e2e/`：真实 CodeMirror、布局、焦点与持久化的 Playwright 回归测试。
 - `scripts/prepare-release-assets.ps1`：准备无空格的 Windows 发布文件名。
+- `docs/releases/`：与 GitHub Release 正文对应的版本发布说明。
 
 ## 运行与验证
 
@@ -49,6 +50,14 @@ npm run tauri build
 - Windows 发布文件名固定为 `markdown-studio-<version>.exe`、`markdown-studio-<version>-x64.msi`、`markdown-studio-<version>-x64-setup.exe`。
 - `npm run test:e2e` 依赖已安装的 Microsoft Edge，测试使用端口 1425；测试产物不得提交。
 - 可选 `npm run test:native` 使用已构建的 EXE 和 WebView2 调试端口；必须关闭已有应用窗口，且已有初始化的偏好 Store。测试仅改动临时文档，结束后恢复偏好文件；不绕过 Tauri 权限或改写只读接口。
+
+## 版本发布完整性
+
+- 本项目用户已明确要求版本更新同步 GitHub Releases。版本变更后的“提交 GitHub / 更新 GitHub”默认包含源码推送、版本标签、Release 正文与 Windows 下载包；仅当用户明确要求“只提交源码”时跳过发布。
+- 发布检查依次覆盖：版本清单/锁文件一致、验证结果、源码提交与远端一致、无空格资产、正确 tag 指向、Release/Latest、三项资产 SHA-256、README 下载入口、项目进度。
+- 先核对现有 Release 与资产，不覆盖其他版本；使用草稿上传并核验后发布，禁止把新二进制放进旧版本 Release。
+- 区分 GitHub 发布与本机升级。除非用户明确要求，不覆盖已安装程序、快捷方式或用户文档；交付时说明本机版本是否仍旧。
+- 自动发布流水线、自动更新器与代码签名不属于推送源码即可自动完成的事项，不得宣称已配置。
 
 ## 验收重点
 
